@@ -213,10 +213,7 @@ def save_ass(s_xml_danmaku, s_save_ass):
 
 def main():
     s_av = sys.argv[1]
-    print s_av
-
     s_url = 'http://www.bilibili.com/av' + s_av
-    print s_url
 
     d_cid = {}
     data = requests.get(s_url, headers=d_header)
