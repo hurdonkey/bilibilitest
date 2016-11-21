@@ -13,6 +13,7 @@ pip install lxml
 部分页面内容需要先登录才能获取,暂时不支持<br>
 部分页面有多个视频,支持所有视频的字幕下载<br>
 
+下载相应的视频文件,改成一致的名字,使用播放其打开即可加载字幕
 ![](https://raw.githubusercontent.com/hurdonkey/bilibilitest/master/img/test.jpg)
 
 ## Todo
