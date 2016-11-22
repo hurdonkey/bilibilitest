@@ -74,8 +74,9 @@ class MSG():
         else:
             MSG.d_regularcount_of_sec[(self.mode, self.i_time_offset)] += 1
 
-    def msg_print(self):
-        print self.mode, self.time_offset, self.time_stamp, self.fontsize, self.color, self.message
+    def __str__(self):
+        # print self.message
+        return (self.mode + self.time_offset + self.time_stamp + self.fontsize + self.color + self.message).encode(stdiocoding)
 
     def msg_fmt_ass_time(self, i_time_interval):
         ''' 弹幕时间转换成ass格式的时间 '''
@@ -131,10 +132,8 @@ class MSG():
 
 def checkaccess(s_html):
     ''' 判断页面是否需要先登录 '''
-    if s_html.find(r'div class="z-msg"') >= 0:
-        assert("It must be logged before parse this page!")
-    else:
-        return
+    assert s_html.find(
+        r'div class="z-msg"') < 0, "It must be logged before parse this page!"
 
 
 def checkindex(s_html, s_av):
@@ -204,7 +203,7 @@ def save_ass(s_xml_danmaku, s_save_ass):
         # s_msg_id = l_tmp[7]  # guess
         m = MSG(s_mode, s_time_offset, s_time_stamp,
                 s_fontsize, s_color, l.text)
-        # m.msg_print()
+        print m
         fd.write(m.msg_fmt_ass() + '\n')
     fd.close()
     print MSG.d_msgcount

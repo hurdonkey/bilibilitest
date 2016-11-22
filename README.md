@@ -2,6 +2,7 @@
 下载bilibili弹幕并转换成ass字幕的脚本
 
 ## Install
+python2环境
 pip install lxml
 > 安装lxml前有部分依赖包需要安装,[参考](http://lxml.de/installation.html#requirements)
 
