@@ -43,7 +43,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 '''
 
 
-class MSG():
+class Msg():
     ''' 定义弹幕类 '''
     d_msgcount = {'count': 0, '1': 0, '4': 0, '5': 0, 'x': 0}     # 记录弹幕类别的字典
     # 记录相同某一秒内的普通弹幕条数的字典
@@ -52,31 +52,31 @@ class MSG():
     d_topbtmcount_of_sec = {}
 
     def __init__(self, mode, time_offset, time_stamp, fontsize, color, message):
-        self.mode = mode
-        self.time_offset = time_offset
-        self.time_stamp = time_stamp
-        self.fontsize = fontsize
-        self.color = hex(int(color))[2:].upper()
-        self.message = message
+        self._mode = mode
+        self._time_offset = time_offset
+        self._time_stamp = time_stamp
+        self._fontsize = fontsize
+        self._color = hex(int(color))[2:].upper()
+        self._message = message
 
         # 类内共享的临时变量
-        self.f_time_offset = float(self.time_offset)
+        self.f_time_offset = float(self._time_offset)
         self.i_time_offset = int(self.f_time_offset)  # 当前msg对象秒数的整数值
-        self.i_msglen = len(self.message)             # 弹幕字符长度
+        self.i_msglen = len(self._message)             # 弹幕字符长度
 
         # count msg by type
-        MSG.d_msgcount['count'] += 1
-        MSG.d_msgcount[self.mode] += 1
+        Msg.d_msgcount['count'] += 1
+        Msg.d_msgcount[self._mode] += 1
 
         # count msg by type and second
-        if (self.mode, self.i_time_offset) not in MSG.d_regularcount_of_sec:
-            MSG.d_regularcount_of_sec[(self.mode, self.i_time_offset)] = 1
+        if (self._mode, self.i_time_offset) not in Msg.d_regularcount_of_sec:
+            Msg.d_regularcount_of_sec[(self._mode, self.i_time_offset)] = 1
         else:
-            MSG.d_regularcount_of_sec[(self.mode, self.i_time_offset)] += 1
+            Msg.d_regularcount_of_sec[(self._mode, self.i_time_offset)] += 1
 
     def __str__(self):
-        # print self.message
-        return (self.mode + self.time_offset + self.time_stamp + self.fontsize + self.color + self.message).encode(stdiocoding)
+        # print self._message
+        return (self._mode + self._time_offset + self._time_stamp + self._fontsize + self._color + self._message).encode(stdiocoding)
 
     def msg_fmt_ass_time(self, i_time_interval):
         ''' 弹幕时间转换成ass格式的时间 '''
@@ -92,12 +92,12 @@ class MSG():
         s_name = ''
         s_margin_l = s_margin_r = s_margin_v = '0000'
         s_effect = ''
-        s_text_color = '' if self.color == 'FFFFFF' else '\c&H' + self.color + '&'  # 颜色属性
-        if self.mode == '1':
+        s_text_color = '' if self._color == 'FFFFFF' else '\c&H' + self._color + '&'  # 颜色属性
+        if self._mode == '1':
             i_time_interval = 15  # speed
             s_time_start, s_time_end = self.msg_fmt_ass_time(i_time_interval)
-            i_resy_offset = MSG.d_regularcount_of_sec[
-                (self.mode, self.i_time_offset)] * 32  # 当前msg对象的滚动行位置
+            i_resy_offset = Msg.d_regularcount_of_sec[
+                (self._mode, self.i_time_offset)] * 32  # 当前msg对象的滚动行位置
             t_text_move = (                            # move属性,弹幕移动的参数元组
                 PlayResX + self.i_msglen * 16,         # 弹幕初始位置的垂直偏移
                 i_resy_offset,                         # 初始位置的水平偏移
@@ -105,26 +105,26 @@ class MSG():
                 i_resy_offset,                         # 结束位置的水平偏移
             )
             s_text = '{' + s_text_color + '\move' + \
-                str(t_text_move) + '}' + self.message
-        elif self.mode == '4' or self.mode == '5':
+                str(t_text_move) + '}' + self._message
+        elif self._mode == '4' or self._mode == '5':
             i_time_interval = 5  # display span
             s_time_start, s_time_end = self.msg_fmt_ass_time(i_time_interval)
             for i in range(self.i_time_offset, self.i_time_offset + i_time_interval):
                 # 将字幕出现时间之后的5个秒数 弹幕计数全部加一
-                if (self.mode, i) not in MSG.d_topbtmcount_of_sec:
-                    MSG.d_topbtmcount_of_sec[(self.mode, i)] = 1
+                if (self._mode, i) not in Msg.d_topbtmcount_of_sec:
+                    Msg.d_topbtmcount_of_sec[(self._mode, i)] = 1
                 else:
-                    MSG.d_topbtmcount_of_sec[(self.mode, i)] += 1
-            i_resy_offset = MSG.d_topbtmcount_of_sec[
-                (self.mode, self.i_time_offset)] * 32
-            i_resy_offset = i_resy_offset if self.mode == '5' else PlayResY - i_resy_offset
+                    Msg.d_topbtmcount_of_sec[(self._mode, i)] += 1
+            i_resy_offset = Msg.d_topbtmcount_of_sec[
+                (self._mode, self.i_time_offset)] * 32
+            i_resy_offset = i_resy_offset if self._mode == '5' else PlayResY - i_resy_offset
             t_text_move = (PlayResX / 2, i_resy_offset)
             s_text = '{' + s_text_color + '\pos' + \
-                str(t_text_move) + '}' + self.message
+                str(t_text_move) + '}' + self._message
         else:
             pass
         return 'Dialogue: %s,%s,%s,%s,%s,%s,%s,%s,%s,%s' % (
-            self.mode, s_time_start, s_time_end, s_type,
+            self._mode, s_time_start, s_time_end, s_type,
             s_name, s_margin_l, s_margin_r, s_margin_v,
             s_effect, s_text
         )
@@ -201,12 +201,12 @@ def save_ass(s_xml_danmaku, s_save_ass):
         # s_pool = l_tmp[5]    # unknow
         # s_user_id = l_tmp[6] # guess
         # s_msg_id = l_tmp[7]  # guess
-        m = MSG(s_mode, s_time_offset, s_time_stamp,
+        m = Msg(s_mode, s_time_offset, s_time_stamp,
                 s_fontsize, s_color, l.text)
         print m
         fd.write(m.msg_fmt_ass() + '\n')
     fd.close()
-    print MSG.d_msgcount
+    print Msg.d_msgcount
 
 
 def main():
