@@ -78,7 +78,7 @@ class Msg():
         # print self._message
         return (self._mode + self._time_offset + self._time_stamp + self._fontsize + self._color + self._message).encode(stdiocoding)
 
-    def msg_fmt_ass_time(self, i_time_interval):
+    def _msg_fmt_ass_time(self, i_time_interval):
         ''' 弹幕时间转换成ass格式的时间 '''
         s_time_start = time.strftime(
             '%X', time.gmtime(self.f_time_offset))[1:] + '.00'
@@ -95,7 +95,7 @@ class Msg():
         s_text_color = '' if self._color == 'FFFFFF' else '\c&H' + self._color + '&'  # 颜色属性
         if self._mode == '1':
             i_time_interval = 15  # speed
-            s_time_start, s_time_end = self.msg_fmt_ass_time(i_time_interval)
+            s_time_start, s_time_end = self._msg_fmt_ass_time(i_time_interval)
             i_resy_offset = Msg.d_regularcount_of_sec[
                 (self._mode, self.i_time_offset)] * 32  # 当前msg对象的滚动行位置
             t_text_move = (                            # move属性,弹幕移动的参数元组
@@ -108,7 +108,7 @@ class Msg():
                 str(t_text_move) + '}' + self._message
         elif self._mode == '4' or self._mode == '5':
             i_time_interval = 5  # display span
-            s_time_start, s_time_end = self.msg_fmt_ass_time(i_time_interval)
+            s_time_start, s_time_end = self._msg_fmt_ass_time(i_time_interval)
             for i in range(self.i_time_offset, self.i_time_offset + i_time_interval):
                 # 将字幕出现时间之后的5个秒数 弹幕计数全部加一
                 if (self._mode, i) not in Msg.d_topbtmcount_of_sec:
